@@ -8,19 +8,31 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import EmptyState from '@/components/common/EmptyState';
 import type { Meeting } from '@/types';
 
+const statusTabs = [
+  { value: '', label: '모집중' },
+  { value: 'all', label: '전체' },
+  { value: 'ordered', label: '주문됨' },
+  { value: 'completed', label: '완료' },
+];
+
 export default function HomePage() {
   const navigate = useNavigate();
   const [category, setCategory] = useState('');
   const [sort, setSort] = useState('latest');
+  const [statusFilter, setStatusFilter] = useState('');
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['meetings', category, sort],
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['meetings', category, sort, statusFilter],
     queryFn: async () => {
       const params: Record<string, string> = { sort };
       if (category) params.category = category;
+      if (statusFilter) params.status = statusFilter;
       const res = await meetingsApi.list(params);
-      return res.data.data as Meeting[];
+      const raw = res.data.data;
+      if (Array.isArray(raw)) return raw as Meeting[];
+      return [];
     },
+    retry: 0,
   });
 
   return (
@@ -39,6 +51,23 @@ export default function HomePage() {
       </header>
 
       <div className="page-container">
+        {/* 상태 탭 */}
+        <div className="flex gap-1 bg-gray-50 rounded-xl p-1 mb-4">
+          {statusTabs.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setStatusFilter(tab.value)}
+              className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                statusFilter === tab.value
+                  ? 'bg-white text-primary shadow-sm'
+                  : 'text-gray-300'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
         <MeetingFilter
           category={category}
           sort={sort}
@@ -49,8 +78,13 @@ export default function HomePage() {
         <div className="mt-4 space-y-3">
           {isLoading ? (
             <LoadingSpinner />
+          ) : isError ? (
+            <EmptyState message="모임을 불러올 수 없어요" sub="서버 연결을 확인해주세요." />
           ) : !data || data.length === 0 ? (
-            <EmptyState message="모집 중인 모임이 없어요" sub="새로운 모임을 만들어보세요!" />
+            <EmptyState
+              message={statusFilter === '' ? '모집 중인 모임이 없어요' : '모임이 없어요'}
+              sub="새로운 모임을 만들어보세요!"
+            />
           ) : (
             data.map((meeting) => (
               <MeetingCard key={meeting.id} meeting={meeting} />

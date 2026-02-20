@@ -23,7 +23,7 @@ interface JoinMeetingRequest {
 }
 
 export const meetingsApi = {
-  list: (params?: { campus?: string; category?: string; sort?: string; page?: number; limit?: number }) =>
+  list: (params?: { campus?: string; category?: string; sort?: string; status?: string; page?: number; limit?: number }) =>
     client.get<ApiResponse<Meeting[]>>('/meetings', { params }),
 
   getById: (id: number) =>

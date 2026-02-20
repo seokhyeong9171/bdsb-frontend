@@ -15,25 +15,42 @@ const typeIcon: Record<string, string> = {
   system: '🔔',
 };
 
+interface NotificationsResponse {
+  notifications: Notification[];
+  unreadCount: number;
+}
+
 export default function NotificationPage() {
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
       const res = await notificationsApi.getAll();
-      return res.data.data as Notification[];
+      // 백엔드 응답: { success: true, data: { notifications: [...], unreadCount: N } }
+      const raw = res.data.data;
+      if (Array.isArray(raw)) return raw as Notification[];
+      const typed = raw as unknown as NotificationsResponse;
+      return typed?.notifications ?? [];
     },
   });
 
   const handleMarkAll = async () => {
-    await notificationsApi.markAllAsRead();
-    queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    try {
+      await notificationsApi.markAllAsRead();
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    } catch {
+      // 에러 무시
+    }
   };
 
   const handleMarkOne = async (id: number) => {
-    await notificationsApi.markAsRead(id);
-    queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    try {
+      await notificationsApi.markAsRead(id);
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    } catch {
+      // 에러 무시
+    }
   };
 
   return (
@@ -49,6 +66,8 @@ export default function NotificationPage() {
       <div className="page-container">
         {isLoading ? (
           <LoadingSpinner />
+        ) : isError ? (
+          <EmptyState message="알림을 불러올 수 없어요" sub="잠시 후 다시 시도해주세요." />
         ) : !data || data.length === 0 ? (
           <EmptyState message="알림이 없어요" />
         ) : (
