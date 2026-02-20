@@ -37,7 +37,8 @@ export interface BadgeCount {
 
 // ── 인증 ──
 export interface AuthResponse {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
   user: {
     id: number;
     email: string;

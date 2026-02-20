@@ -23,7 +23,7 @@ export default function RegisterPage() {
       const { passwordConfirm: _, ...payload } = data;
       const res = await authApi.register(payload);
       if (res.data.success && res.data.data) {
-        login(res.data.data.token, res.data.data.user);
+        login(res.data.data.accessToken, res.data.data.user);
         toast.success('회원가입 성공!');
         navigate('/', { replace: true });
       }
