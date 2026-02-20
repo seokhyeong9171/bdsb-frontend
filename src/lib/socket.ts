@@ -9,7 +9,7 @@ export function getSocket(): Socket | null {
 export function connectSocket(token: string): Socket {
   if (socket?.connected) return socket;
 
-  socket = io('/', {
+  socket = io(import.meta.env.VITE_API_URL || '/', {
     auth: { token },
     transports: ['websocket'],
   });
