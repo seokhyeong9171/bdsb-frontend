@@ -17,7 +17,7 @@ export default function LoginPage() {
     try {
       const res = await authApi.login(data);
       if (res.data.success && res.data.data) {
-        login(res.data.data.token, res.data.data.user);
+        login(res.data.data.accessToken, res.data.data.user);
         toast.success('로그인 성공!');
         navigate('/', { replace: true });
       }
