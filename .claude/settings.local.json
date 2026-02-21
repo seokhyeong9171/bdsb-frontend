@@ -7,7 +7,14 @@
       "Bash(npm install)",
       "Bash(npm install:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx vite build:*)"
+      "Bash(npx vite build:*)",
+      "Bash(chmod:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAWS 무중단 배포 설정 추가 \\(EC2 + Nginx + GitHub Actions\\)\n\n- .github/workflows/deploy.yml: master push 시 자동 배포 CI/CD 워크플로우\n- deploy/nginx.conf: 프론트엔드 정적 서빙 + API/WebSocket 리버스 프록시\n- deploy/ecosystem.config.js: PM2 프로세스 관리 설정 \\(무중단 재시작\\)\n- deploy/deploy.sh: 수동 배포 스크립트\n- deploy/.env.example: 백엔드 환경변수 템플릿\n- deploy/DEPLOY_GUIDE.md: 8단계 상세 배포 가이드\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git remote:*)",
+      "Bash(gh auth status:*)"
     ]
   }
 }
