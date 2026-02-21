@@ -132,7 +132,7 @@ export default function MeetingDetailPage() {
               참여하기
             </button>
           )}
-          {isMember && meeting.status === 'recruiting' && (
+          {isMember && meeting.status !== 'cancelled' && (
             <button onClick={() => navigate(`/meetings/${meeting.id}/chat`)} className="btn-secondary">
               채팅방 입장
             </button>
