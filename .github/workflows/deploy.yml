@@ -36,17 +36,36 @@ jobs:
           AWS_REGION: ap-northeast-2
           SOURCE_DIR: 'dist'
 
-      - name: Update Nginx Config on EC2
+#      - name: Update Nginx Config on EC2
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.EC2_HOST }}      # EC2의 탄력적 IP
+#          username: ubuntu
+#          key: ${{ secrets.EC2_SSH_KEY }}   # GitHub Secrets에 등록한 .pem 키 내용
+#          script: |
+#            # 1. 프로젝트 폴더의 nginx.conf를 시스템 폴더로 복사
+#            # (Git을 통해 코드가 받아져 있다고 가정하거나, scp로 파일을 보내는 단계가 필요할 수 있습니다.)
+#            sudo cp /home/ubuntu/bdsb-frontend/deploy/nginx.conf /etc/nginx/sites-available/bdsb
+#
+#            # 2. 링크 확인 및 Nginx 재시작
+#            sudo ln -sf /etc/nginx/sites-available/bdsb /etc/nginx/sites-enabled/
+#            sudo nginx -t && sudo systemctl restart nginx
+
+
+      - name: Execute Deploy Script on EC2
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}      # EC2의 탄력적 IP
+          host: ${{ secrets.EC2_HOST }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}   # GitHub Secrets에 등록한 .pem 키 내용
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 1. 프로젝트 폴더의 nginx.conf를 시스템 폴더로 복사
-            # (Git을 통해 코드가 받아져 있다고 가정하거나, scp로 파일을 보내는 단계가 필요할 수 있습니다.)
-            sudo cp /home/ubuntu/bdsb-backend/nginx.conf /etc/nginx/sites-available/bdsb
-
-            # 2. 링크 확인 및 Nginx 재시작
-            sudo ln -sf /etc/nginx/sites-available/bdsb /etc/nginx/sites-enabled/
-            sudo nginx -t && sudo systemctl restart nginx
+            # 1. 프론트엔드 폴더로 이동
+            cd /home/ubuntu/bdsb-frontend
+            
+            # 2. 최신 코드(스크립트 포함)를 먼저 가져옴 (이게 핵심!)
+            git fetch origin
+            git reset --hard origin/master
+            
+            # 3. 폴더 안에 있는 스크립트에 권한 주고 실행
+            chmod +x deploy/deploy.sh
+            ./deploy/deploy.sh
