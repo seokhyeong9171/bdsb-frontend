@@ -7,7 +7,7 @@ set -e
 
 DEPLOY_DIR="/home/ubuntu"
 FRONTEND_DIR="$DEPLOY_DIR/bdsb-frontend"
-BACKEND_DIR="$DEPLOY_DIR/bdsb-backend"
+#BACKEND_DIR="$DEPLOY_DIR/bdsb-backend"
 LOG_DIR="$DEPLOY_DIR/logs"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
@@ -34,10 +34,10 @@ git fetch origin
 git reset --hard origin/master
 log "프론트엔드 코드 업데이트 완료"
 
-cd "$BACKEND_DIR"
-git fetch origin
-git reset --hard origin/master
-log "백엔드 코드 업데이트 완료"
+#cd "$BACKEND_DIR"
+#git fetch origin
+#git reset --hard origin/master
+#log "백엔드 코드 업데이트 완료"
 
 # ... 소스 코드 업데이트(git reset --hard) 로직 바로 다음에 추가 ...
 
@@ -61,13 +61,13 @@ log "Nginx 설정 반영 완료!"
 # ==========================================
 # 2. 백엔드 의존성 설치 + 무중단 재시작
 # ==========================================
-log "백엔드 의존성 설치 중..."
-cd "$BACKEND_DIR"
-npm install --production
+#log "백엔드 의존성 설치 중..."
+#cd "$BACKEND_DIR"
+#npm install --production
 
-log "백엔드 무중단 재시작 중..."
-pm2 reload bdsb-backend --update-env
-log "백엔드 재시작 완료"
+#log "백엔드 무중단 재시작 중..."
+#pm2 reload bdsb-backend --update-env
+#log "백엔드 재시작 완료"
 
 # ==========================================
 # 3. 프론트엔드 빌드
