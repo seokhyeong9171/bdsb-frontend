@@ -50,28 +50,37 @@ export default function ChatRoomPage() {
     setSocketError(false);
     const socket = connectSocket(token);
 
-    socket.on('connect', () => {
+    const handleConnect = () => {
       setSocketError(false);
       socket.emit('join_room', roomId);
-    });
+    };
+
+    const handleNewMessage = (msg: ChatMessage) => {
+      setMessages((prev) => [...prev, msg]);
+    };
+
+    const handleConnectError = () => {
+      setSocketError(true);
+    };
+
+    // 기존 리스너 제거 후 등록 (중복 방지)
+    socket.off('connect', handleConnect);
+    socket.off('new_message', handleNewMessage);
+    socket.off('connect_error', handleConnectError);
+
+    socket.on('connect', handleConnect);
+    socket.on('new_message', handleNewMessage);
+    socket.on('connect_error', handleConnectError);
 
     // 이미 연결된 상태면 바로 방 참여
     if (socket.connected) {
       socket.emit('join_room', roomId);
     }
 
-    socket.on('new_message', (msg: ChatMessage) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-
-    socket.on('connect_error', () => {
-      setSocketError(true);
-    });
-
     return () => {
-      socket.off('connect');
-      socket.off('new_message');
-      socket.off('connect_error');
+      socket.off('connect', handleConnect);
+      socket.off('new_message', handleNewMessage);
+      socket.off('connect_error', handleConnectError);
       socket.emit('leave_room', roomId);
       disconnectSocket();
     };
