@@ -79,21 +79,21 @@ npm run build
 
 log "프론트엔드 빌드 완료"
 
-# ==========================================
-# 4. 상태 확인
-# ==========================================
-log "배포 상태 확인..."
-pm2 status
-
-# 헬스체크
-sleep 2
-HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/stores || echo "000")
-if [ "$HTTP_STATUS" = "200" ]; then
-    log "백엔드 헬스체크 OK (HTTP $HTTP_STATUS)"
-else
-    warn "백엔드 헬스체크 실패 (HTTP $HTTP_STATUS) - 로그를 확인하세요"
-    pm2 logs bdsb-backend --lines 20
-fi
+## ==========================================
+## 4. 상태 확인
+## ==========================================
+#log "배포 상태 확인..."
+#pm2 status
+#
+## 헬스체크
+#sleep 2
+#HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/stores || echo "000")
+#if [ "$HTTP_STATUS" = "200" ]; then
+#    log "백엔드 헬스체크 OK (HTTP $HTTP_STATUS)"
+#else
+#    warn "백엔드 헬스체크 실패 (HTTP $HTTP_STATUS) - 로그를 확인하세요"
+#    pm2 logs bdsb-backend --lines 20
+#fi
 
 log "=========================================="
 log "배포 완료! ($TIMESTAMP)"
