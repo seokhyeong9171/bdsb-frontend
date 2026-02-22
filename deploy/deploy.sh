@@ -39,6 +39,25 @@ git fetch origin
 git reset --hard origin/master
 log "백엔드 코드 업데이트 완료"
 
+# ... 소스 코드 업데이트(git reset --hard) 로직 바로 다음에 추가 ...
+
+# ==========================================
+# 1-1. Nginx 설정 파일 동기화 (핵심 추가)
+# ==========================================
+log "Nginx 설정 파일을 시스템 폴더로 배달 중..."
+
+# 프로젝트 폴더의 nginx.conf를 Nginx 시스템 폴더로 복사
+sudo cp "$FRONTEND_DIR/deploy/nginx.conf" /etc/nginx/sites-available/bdsb
+
+# 활성화 링크 다시 연결 (이미 되어있어도 안전하게 재연결)
+sudo ln -sf /etc/nginx/sites-available/bdsb /etc/nginx/sites-enabled/
+
+# Nginx 문법 검사 후 재시작
+sudo nginx -t && sudo systemctl restart nginx
+log "Nginx 설정 반영 완료!"
+
+# ... 그 다음 백엔드/프론트엔드 빌드 진행 ...
+
 # ==========================================
 # 2. 백엔드 의존성 설치 + 무중단 재시작
 # ==========================================
